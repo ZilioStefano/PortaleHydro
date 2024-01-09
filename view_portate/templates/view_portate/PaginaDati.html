@@ -1,0 +1,9 @@
+{% extends "view_portate/base.html" %}
+{% block content %}
+<p>Pagina Dati - {{ title }}</p>
+    <p>{{ Graph | safe }}</p>
+    <p>{{ Histo | safe }}</p>
+{% endblock content %}
+{% block sidebar %}
+    <h1>Info ...</h1>
+{% endblock sidebar %}

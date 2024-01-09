@@ -1,0 +1,17 @@
+{% extends 'view_portate/base.html' %}
+{% block content %}
+<div class="account-heading">
+    <form method="POST" novalidate>
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4"><small>
+                {{ form.as_p }}
+            </small>
+            </legend>
+        </fieldset>
+        <div class="form-group">
+            <button type="submit" class="btn btn-outline-info">Login</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
