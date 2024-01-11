@@ -3,5 +3,25 @@
 {{ Map | safe }}
 {% endblock content %}
 {% block sidebar %}
-    <h1>Feed ...</h1>
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Punto di misurazione</th>
+            <th>Portata media last</th>
+            <th>Portata media</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Alfreds Futterkiste</td>
+                <td>Maria Anders</td>
+                <td>Germany</td>
+            </tr>
+            <tr>
+                <td>Centro comercial Moctezuma</td>
+                <td>Francisco Chang</td>
+                <td>Mexico</td>
+            </tr>
+        </tbody>
+    </table>
 {% endblock sidebar %}
