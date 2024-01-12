@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
+import datetime
 import folium
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from statistics import mean
 import numpy as np
-
+import re
 
 def createPlot(data, name):
     t = data["t"]
@@ -77,6 +78,7 @@ def createHistogram(data, Name):
     return dataPlot
 
 def createMap(data):
+
     Lat = data["Latitudine"]
     Long = data["Longitudine"]
 
@@ -90,22 +92,98 @@ def createMap(data):
     MeanLat = mean(Lat)
     MeanLong = mean(Long)
 
+    Stato = data['Stato']
+
     figure = folium.Figure()
     map = folium.Map(location=[MeanLat, MeanLong],
-                     zoom_start=7,
+                     zoom_start=6,
                      control_scale=True,
                      tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                      attr='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
                      )
-    folium.TileLayer(tiles='OpenStreetMap',opacity=0.4).add_to(map)
+    folium.TileLayer(tiles='OpenStreetMap', opacity=0.4).add_to(map)
 
     for i in range(len(punto_misura)):
+
+        if Stato[i] == "In servizio":
+            MarkerColor = "blue"
+
+        elif Stato[i] == "Guasto":
+            MarkerColor = "red"
+
+        elif Stato[i] == "Da installare":
+            MarkerColor = "green"
+
+        else:
+            MarkerColor = " #f1c40f"
+
         folium.Marker(location=[Lat[i], Long[i]], tooltip=punto_misura[i], max_width=2000,
-            icon=folium.Icon(icon='fa-weight-scale', prefix='fa')).add_to(map)
+            icon=folium.Icon(icon='fa-weight-scale', prefix='fa', color=MarkerColor)).add_to(map)
 
     map.add_to(figure)
     map_fig = map._repr_html_()
     return map_fig
+
+
+def ff(x):
+    if len(str(x)) <= 3: return 1
+    else: return 0
+
+
+def create_feed(MisuratoriTab):
+
+    ModelloClean = MisuratoriTab["Modello"].values
+    MedDevStr = []
+
+    UltimoValore = MisuratoriTab["Ultimo valore"].values
+    UltimoTimeStamp = MisuratoriTab["Ultimo timestamp"].values
+    UltimoTimeStamp = pd.to_datetime(UltimoTimeStamp)
+
+    Medie = MisuratoriTab["Portata media globale"].values
+    Devs = MisuratoriTab["Dev portata"].values
+    lastMeasure = []
+
+    StateColor = []
+    StatoMisuratori = MisuratoriTab["Stato"]
+
+    for i in range(len(ModelloClean)):
+
+        if str(ModelloClean[i]) == "nan":
+            ModelloClean[i] = ""
+
+        if pd.isnull(UltimoTimeStamp[i]):
+            lastMeasure.append("")
+        else:
+            lastMeasure.append(str(UltimoValore[i])+" l/s al "+UltimoTimeStamp[i].strftime('%d/%m/%Y %H:%M'))
+
+        if np.isnan(Medie[i]):
+            MedDevStr.append("")
+        else:
+            string = str(Medie[i]) +chr(177)+ str(Devs[i])+" l/s"
+            # string = string.replace("Â", " ")
+            MedDevStr.append(string)
+
+        if StatoMisuratori[i] == "In servizio":
+            StateColor.append("green")
+
+    FeedDict = {"Punti di misura": MisuratoriTab["Punto di misura"], "Modello": ModelloClean, "Media "+chr(177)+" deviazione standard": MedDevStr, "Ultima misura": lastMeasure, "Stato": StatoMisuratori}
+    FeedDf = pd.DataFrame(FeedDict)
+
+    # FeedDf = FeedDf.style.set_properties(**{'color': "black", 'align': "left", 'backgroundcolor': "yellow"})
+    # FeedDf = FeedDf.style.set_properties(
+    #     **{"text-align": "left"}
+    # )
+
+    # FeedDf.style.applymap(ff)
+    FeedDf.to_html("Feed.html", index=False, classes=["table-bordered", "table-striped", "table-hover"], justify='left')
+
+    with open('Feed.html', 'r') as f:
+        FeedHTML = f.read()
+
+    return FeedHTML
+
+
+    # Bancale.to_html("OpenBancale.html")
 
 
 
@@ -113,10 +191,12 @@ def createMap(data):
 def home(request):
     Measures = pd.read_excel("view_portate/static/data/Misuratori installati.xlsx")
     map_fig = createMap(Measures)
+    FeedHTML = create_feed(Measures)
+
     punto_misura = Measures["Punto di misura"]
 
-    context = {"Map": map_fig, "punto_misura": punto_misura}
-    return render(request, 'view_portate/HomePage.html', context)
+    context = {"Map": map_fig, "punto_misura": punto_misura, "Tab": FeedHTML}
+    return render(request, 'view_portate/HomePage2.html', context)
 
 @login_required
 def merone1(request):
