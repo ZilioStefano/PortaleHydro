@@ -85,7 +85,7 @@ def createMap(data):
     ### VISUALIZZAZIONE MISURATORI DIFFERENZIATA PER UTENTE ###
     # if request.user.username=='damiano':
     #     punto_misura=MeasureList["Punto di misura"]
-    punto_misura = data["Punto di misura"]
+    punto_misura = data["Punto_di_misura"]
     # else:
     # punto_misura = MeasureList.loc[MeasureList["Permesso"]==request.user.username,"Punto di misura"].tolist()
 
@@ -114,8 +114,8 @@ def createMap(data):
         elif Stato[i] == "Da installare":
             MarkerColor = "green"
 
-        else:
-            MarkerColor = " #f1c40f"
+        elif Stato[i] == "In valutazione":
+            MarkerColor = "orange"
 
         folium.Marker(location=[Lat[i], Long[i]], tooltip=punto_misura[i], max_width=2000,
             icon=folium.Icon(icon='fa-weight-scale', prefix='fa', color=MarkerColor)).add_to(map)
@@ -133,13 +133,14 @@ def ff(x):
 def create_feed(MisuratoriTab):
 
     ModelloClean = MisuratoriTab["Modello"].values
+    head = MisuratoriTab.head()
     MedDevStr = []
 
-    UltimoValore = MisuratoriTab["Ultimo valore"].values
+    UltimoValore = MisuratoriTab["Ultimo_valore"].values
     UltimoTimeStamp = MisuratoriTab["Ultimo timestamp"].values
     UltimoTimeStamp = pd.to_datetime(UltimoTimeStamp)
 
-    Medie = MisuratoriTab["Portata media globale"].values
+    Medie = MisuratoriTab["Portata_media_globale"].values
     Devs = MisuratoriTab["Dev portata"].values
     lastMeasure = []
 
@@ -166,8 +167,8 @@ def create_feed(MisuratoriTab):
         if StatoMisuratori[i] == "In servizio":
             StateColor.append("green")
 
-    FeedDict = {"Punti di misura": MisuratoriTab["Punto di misura"], "Modello": ModelloClean, "Media "+chr(177)+" deviazione standard": MedDevStr, "Ultima misura": lastMeasure, "Stato": StatoMisuratori}
-    FeedDf = pd.DataFrame(FeedDict)
+    FeedDict = {"testa": head, "punti_misura": MisuratoriTab["Punto_di_misura"], "Modello": ModelloClean, "Media": MedDevStr, "Ultima_misura": lastMeasure, "Stato": StatoMisuratori,"colore": StateColor}
+    # FeedDf = pd.DataFrame(FeedDict)
 
     # FeedDf = FeedDf.style.set_properties(**{'color': "black", 'align': "left", 'backgroundcolor': "yellow"})
     # FeedDf = FeedDf.style.set_properties(
@@ -175,12 +176,12 @@ def create_feed(MisuratoriTab):
     # )
 
     # FeedDf.style.applymap(ff)
-    FeedDf.to_html("Feed.html", index=False, classes=["table-bordered", "table-striped", "table-hover"], justify='left')
+    # FeedDf.to_html("Feed.html", index=False, classes=["table-bordered", "table-striped", "table-hover"], justify='left')
 
-    with open('Feed.html', 'r') as f:
-        FeedHTML = f.read()
+    # with open('Feed.html', 'r') as f:
+    #     FeedHTML = f.read()
 
-    return FeedHTML
+    return FeedDict
 
 
     # Bancale.to_html("OpenBancale.html")
@@ -192,11 +193,13 @@ def home(request):
     Measures = pd.read_excel("view_portate/static/data/Misuratori installati.xlsx")
     map_fig = createMap(Measures)
     FeedHTML = create_feed(Measures)
+    diz = Measures.to_dict(orient="index").items()
 
-    punto_misura = Measures["Punto di misura"]
+    punto_misura = Measures["Punto_di_misura"]
 
-    context = {"Map": map_fig, "punto_misura": punto_misura, "Tab": FeedHTML}
-    return render(request, 'view_portate/HomePage2.html', context)
+
+    context = {"Map": map_fig, "punto_misura": punto_misura, "Tab": FeedHTML, "diz": diz}
+    return render(request, 'view_portate/HomePage.html', context)
 
 @login_required
 def merone1(request):

@@ -6,22 +6,27 @@
     <table class="table">
     <thead>
         <tr>
-            <th>Punto di misurazione</th>
-            <th>Portata media last</th>
-            <th>Portata media</th>
+            <th>Punto di misura</th>
+            <th>Media</th>
+            <th>Last</th>
+            <th>Stato</th>
         </tr>
-        </thead>
+    </thead>
         <tbody>
+        {% for index,riga in diz %}
             <tr>
-                <td>{{ punto_misura }}</td>
-                <td>Maria Anders</td>
-                <td>Germany</td>
+                <td>{{ riga.Punto_di_misura }}</td>
+                <td>{{ riga.Portata_media_globale }}</td>
+                <td>{{ riga.Ultimo_valore }}</td>
+                {% if riga.Stato == 'In servizio' %}
+                    <td style="color: skyblue">{{ riga.Stato }}</td>
+                {% elif riga.Stato == 'Guasto' %}
+                    <td style="color: red">{{ riga.Stato }}</td>
+                {% elif riga.Stato %}
+                    <td>{{ riga.Stato }}</td>
+                {% endif %}
             </tr>
-            <tr>
-                <td>Centro comercial Moctezuma</td>
-                <td>Francisco Chang</td>
-                <td>Mexico</td>
-            </tr>
+        {% endfor %}
         </tbody>
     </table>
 {% endblock sidebar %}
