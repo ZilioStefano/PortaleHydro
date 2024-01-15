@@ -7,23 +7,29 @@
     <thead>
         <tr>
             <th>Punto di misura</th>
-            <th>Media</th>
+            <th>Media ± σ</th>
             <th>Last</th>
             <th>Stato</th>
         </tr>
     </thead>
         <tbody>
-        {% for index,riga in diz %}
+        {% for index,riga in tab_feed %}
             <tr>
                 <td>{{ riga.Punto_di_misura }}</td>
-                <td>{{ riga.Portata_media_globale }}</td>
+                {% if riga.Portata_media_globale == "" %}
+                	<td></td>
+                {% elif riga.Portata_media_globale %}
+                    <td>{{ riga.Portata_media_globale }} ± {{ riga.Dev_portata }}</td>
+                {% endif %}
                 <td>{{ riga.Ultimo_valore }}</td>
                 {% if riga.Stato == 'In servizio' %}
-                    <td style="color: skyblue">{{ riga.Stato }}</td>
+                    <td style="color: {{ colori.blu }}">{{ riga.Stato }}</td>
                 {% elif riga.Stato == 'Guasto' %}
-                    <td style="color: red">{{ riga.Stato }}</td>
-                {% elif riga.Stato %}
-                    <td>{{ riga.Stato }}</td>
+                    <td style="color: {{ colori.rosso }}">{{ riga.Stato }}</td>
+                {% elif riga.Stato == 'In valutazione' %}
+                    <td style="color: black">{{ riga.Stato }}</td>
+                {% elif riga.Stato == 'Da installare' %}
+                    <td style="color: {{ colori.arancione }}">{{ riga.Stato }}</td>
                 {% endif %}
             </tr>
         {% endfor %}
