@@ -19,7 +19,6 @@ colori={"bluscuro":"#30415d",#0bluscuro
         "arancione2":"#ff9c0d",#8arancione2
         "giallo":"#f2cf65",#9giallo
         }
-
 colors=['lightgray', #0
         'pink', #1
         'darkred', #2
@@ -133,6 +132,49 @@ def createMap(data):
     map_fig = map._repr_html_()
     return map_fig
 
+
+@login_required
+def home(request):
+    df_tab_misuratori = pd.read_excel("view_portate/static/data/Misuratori installati.xlsx")
+    df_tab_misuratori = df_tab_misuratori.replace(np.nan, '', regex=True) #sostituisce nan con stringaq vuota
+
+    map_fig = createMap(df_tab_misuratori)
+    feed_dict = df_tab_misuratori.to_dict(orient="index").items()
+
+    context = {"Map": map_fig, "tab_feed": feed_dict, "colori": colori}
+    return render(request, 'view_portate/HomePage.html', context)
+
+@login_required
+def merone1(request):
+    data = pd.read_csv("view_portate/static/data/datiMerone1.csv")
+    colonne = [0, 1, 2, 3]
+    graph = createPlot(data, 'Merone1', colonne)
+    histo = createHistogram(data, 'Merone1', colonne)
+    graphs = {'Graph': graph,'Histo': histo,'title': 'Merone I salto',"colori": colori}
+
+    return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
+
+@login_required
+def merone3(request):
+    data = pd.read_csv("view_portate/static/data/datiMerone3.csv")
+    colonne = [0, 1, 2, 3]
+    graph = createPlot(data, 'Merone3', colonne)
+    histo = createHistogram(data, 'Merone3', colonne)
+    graphs = {'Graph': graph,'Histo': histo,'title': 'Merone III salto',"colori": colori}
+
+    return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
+
+@login_required
+def trebisacce(request):
+    colonne = [0, 1, 3, 4]
+    data = pd.read_csv("view_portate/static/data/datiTrebisacce.csv")
+    graph = createPlot(data, 'Trebisacce', colonne)
+    histo = createHistogram(data, 'Trebisacce', colonne)
+    graphs = {'Graph': graph,'Histo': histo,'title': 'Partitore Trebisacce',"colori": colori}
+
+    return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
+
+
 def ff(x):
     if len(str(x)) <= 3: return 1
     else: return 0
@@ -192,45 +234,3 @@ def create_feed(MisuratoriTab):
 
     # Bancale.to_html("OpenBancale.html")
 
-@login_required
-def home(request):
-    df_tab_misuratori = pd.read_excel("view_portate/static/data/Misuratori installati.xlsx")
-    df_tab_misuratori = df_tab_misuratori.replace(np.nan, '', regex=True) #sostituisce nan con stringaq vuota
-
-    map_fig = createMap(df_tab_misuratori)
-    feed_dict = df_tab_misuratori.to_dict(orient="index").items()
-
-    context = {"Map": map_fig, "tab_feed": feed_dict, "colori": colori}
-    return render(request, 'view_portate/HomePage.html', context)
-
-@login_required
-def merone1(request):
-    data = pd.read_csv("view_portate/static/data/datiMerone1.csv")
-    colonne = [0, 1, 2, 3]
-    graph = createPlot(data, 'Merone1', colonne)
-    histo = createHistogram(data, 'Merone1', colonne)
-    graphs = {'Graph': graph,'Histo': histo,'title': 'Merone I salto',"colori": colori}
-
-    return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
-
-@login_required
-def merone3(request):
-    data = pd.read_csv("view_portate/static/data/datiMerone3.csv")
-    colonne = [0, 1, 2, 3]
-    graph = createPlot(data, 'Merone3', colonne)
-    histo = createHistogram(data, 'Merone3', colonne)
-    graphs = {'Graph': graph,'Histo': histo,'title': 'Merone III salto',"colori": colori}
-
-    return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
-
-@login_required
-def trebisacce(request):
-    colonne = [0, 1, 3, 4]
-    data = pd.read_csv("view_portate/static/data/datiTrebisacce.csv")
-    graph = createPlot(data, 'Trebisacce', colonne)
-    histo = createHistogram(data, 'Trebisacce', colonne)
-    graphs = {'Graph': graph,'Histo': histo,'title': 'Partitore Trebisacce',"colori": colori}
-
-    return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
-
-# Create your views here.
