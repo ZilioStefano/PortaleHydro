@@ -137,11 +137,11 @@ def create_feed(MisuratoriTab):
     MedDevStr = []
 
     UltimoValore = MisuratoriTab["Ultimo_valore"].values
-    UltimoTimeStamp = MisuratoriTab["Ultimo timestamp"].values
+    UltimoTimeStamp = MisuratoriTab["Ultimo_timestamp"].values
     UltimoTimeStamp = pd.to_datetime(UltimoTimeStamp)
 
     Medie = MisuratoriTab["Portata_media_globale"].values
-    Devs = MisuratoriTab["Dev portata"].values
+    Devs = MisuratoriTab["Dev_portata"].values
     lastMeasure = []
 
     StateColor = []
