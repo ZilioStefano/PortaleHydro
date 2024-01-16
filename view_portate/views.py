@@ -74,7 +74,7 @@ def createPlotPortata(data, name):
         autosize=True,
         # width=800,
         height=700,
-        yaxis_title="Portata [l/s]",
+        yaxis_title="Portata (l/s)",
         paper_bgcolor='whitesmoke',
         legend=dict(
             #title="Portata",
@@ -99,8 +99,8 @@ def createPlotHistogram(data, name):
         autosize=True,
         # width=800,
         height=350,
-        xaxis_title="Portata [ l/s ]",
-        yaxis_title="Conteggi [minuti]",
+        xaxis_title="Portata (l/s)",
+        yaxis_title="Conteggi (min)",
         showlegend=False,
         # legend=dict(
         #     title="Istogramma portata",
@@ -116,16 +116,24 @@ def createPlotHistogram(data, name):
     return dataPlot
 
 def createPlotDurata(data, name):
-    Q_filtered = data.iloc[:,2]
-    fig = px.histogram(Q_filtered)
+    hours = data.iloc[:,0]
+    QQ = data.iloc[:,1]
+    max_y = max(QQ)
+    # min_y = min(Q_smooth)
+    range = max_y
+
+
+    fig = px.line(x=hours, y=QQ)
     fig.update_layout(
         template="seaborn",
         title=dict(text="Curva di durata", font=dict(size=15),automargin=True, yref='paper'),
         autosize=True,
+        yaxis_range=[-10, max_y + 1 / 2 * range],
+        xaxis_range=[-10, max(hours)+100],
         # width=800,
         height=350,
-        xaxis_title="Portata [ l/s ]",
-        yaxis_title="Conteggi [minuti]",
+        xaxis_title="Tempo (h)",
+        yaxis_title="Portata (l/s)",
         showlegend=False,
         # legend=dict(
         #     title="Curva di Durata",
@@ -134,7 +142,6 @@ def createPlotDurata(data, name):
         #     xanchor="left",
         #     x=0.01),
         margin=dict(l=10, r=10, t=10, b=10),
-        bargap=0.1
         )
     dataPlot = fig.to_html("durata"+name+".html")
 
@@ -189,7 +196,10 @@ def createMap(data):
 @login_required
 def home(request):
     df_tab_misuratori = pd.read_excel("view_portate/static/data/Misuratori installati.xlsx")
-    df_tab_misuratori = df_tab_misuratori.replace(np.nan, '', regex=True) #sostituisce nan con stringaq vuota
+    df_tab_misuratori = df_tab_misuratori.replace(np.nan, '', regex=True)
+    df_tab_misuratori['Ultimo_timestamp'] = pd.to_datetime(df_tab_misuratori['Ultimo_timestamp'])#sostituisce nan con stringaq vuota
+    df_tab_misuratori.Ultimo_timestamp.astype(object).where(df_tab_misuratori.Ultimo_timestamp.notnull(), None)
+    # df_tab_misuratori["Ultimo_timestamp"] = df_tab_misuratori["Ultimo_timestamp"].replace('NaT', '')
 
     map_fig = createMap(df_tab_misuratori)
     feed_dict = df_tab_misuratori.to_dict(orient="index").items()
@@ -199,30 +209,33 @@ def home(request):
 
 @login_required
 def merone1(request):
-    data = pd.read_csv("view_portate/static/data/datiMerone1.csv")
-    plot_portata = createPlotPortata(data, 'Merone1')
-    plot_histo = createPlotHistogram(data, 'Merone1')
-    plot_durata = createPlotDurata(data, 'Merone1')
+    data_portata = pd.read_csv("view_portate/static/data/datiMerone1.csv")
+    plot_portata = createPlotPortata(data_portata, 'Merone1')
+    plot_histo = createPlotHistogram(data_portata, 'Merone1')
+    data_durata = pd.read_csv("view_portate/static/data/durataMerone1.csv")
+    plot_durata = createPlotDurata(data_durata, 'Merone1')
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone I salto',"colori": colori}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
 @login_required
 def merone3(request):
-    data = pd.read_csv("view_portate/static/data/datiMerone3.csv")
-    plot_portata = createPlotPortata(data, 'Merone3')
-    plot_histo = createPlotHistogram(data, 'Merone3')
-    plot_durata = createPlotDurata(data, 'Merone3')
+    data_portata = pd.read_csv("view_portate/static/data/datiMerone3.csv")
+    plot_portata = createPlotPortata(data_portata, 'Merone3')
+    plot_histo = createPlotHistogram(data_portata, 'Merone3')
+    data_durata = pd.read_csv("view_portate/static/data/durataMerone3.csv")
+    plot_durata = createPlotDurata(data_durata, 'Merone3')
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone III salto',"colori": colori}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
 @login_required
 def trebisacce(request):
-    data = pd.read_csv("view_portate/static/data/datiTrebisacce.csv")
-    plot_portata = createPlotPortata(data, 'Trebisacce')
-    plot_histo = createPlotHistogram(data, 'Trebisacce')
-    plot_durata = createPlotDurata(data, 'Trebisacce')
+    data_portata = pd.read_csv("view_portate/static/data/datiTrebisacce.csv")
+    plot_portata = createPlotPortata(data_portata, 'Trebisacce')
+    plot_histo = createPlotHistogram(data_portata, 'Trebisacce')
+    data_durata = pd.read_csv("view_portate/static/data/durataTrebisacce.csv")
+    plot_durata = createPlotDurata(data_durata, 'Trebisacce')
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Partitore Trebisacce',"colori": colori}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
