@@ -11,11 +11,11 @@
 
     <link rel="stylesheet" type="text/css" href="{% static 'view_portate/main.css' %}"/>
 
-    {% comment %}{% if title %}
-        <title>Portale Portate - {{ title }}</title>
+    {% if title %}
+        <title>{{ title }}</title>
     {% else %}
         <title>Portale Portate</title>
-    {% endif %}{% endcomment %}
+    {% endif %}
 </head>
 
 <body>
@@ -63,20 +63,9 @@
                 </div>
             {% endfor %}
         {% endif %}
-        <div class="row">
-            <div class="col-md-6">
-            <div class="content-section">
-                {% block content %}{% endblock content %}
-            </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="col-md-6">
-              <div class="content-section">
-                 {% block sidebar %}{% endblock sidebar %}
-              </div>
-            </div>
-        </div>
+        {% block content %}
+        {#      THE PAGE     #}
+        {% endblock content %}
     </div>
     </main>
 

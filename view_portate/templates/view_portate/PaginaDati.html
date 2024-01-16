@@ -1,18 +1,28 @@
-{% extends "view_portate/base_dati.html" %}
-{% block grafico1 %}
-    <p>{{ portata | safe }}</p>
-{% endblock grafico1 %}
-{% block graficilato %}
-    <table class="table">
-        <tbody>
-            <tr>
-                <td>{{ histo | safe }}</td>
-            </tr>
-            <tr>
-                <td>{{ durata | safe }}</td>
-            </tr>
-        </tbody>
-    </table>
-{% endblock graficilato %}
+{% extends "view_portate/base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="content-section">
+                <p>{{ portata | safe }}</p>
+                <p>I dati filtrati sono ottenuti applicando un <a href="https://it.mathworks.com/help/matlab/ref/rmoutliers.html" target="_blank" rel="noopener noreferrer">filtro di Hampel</a> per ogni finestra di 300 campioni</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="content-section">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td>{{ histo | safe }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ durata | safe }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
 
 

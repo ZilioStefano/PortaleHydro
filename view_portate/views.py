@@ -5,7 +5,7 @@ import folium
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+# from plotly.subplots import make_subplots
 from statistics import mean
 import numpy as np
 
@@ -49,30 +49,35 @@ def createPlotPortata(data, name):
     Q_MEDIA = data.iloc[1,4]
 
     max_y = max(Q_smooth)
-    min_y = min(Q_smooth)
+    # min_y = min(Q_smooth)
     range = max_y
 
     fig = go.Figure()
 
-    plot1 = go.Scatter(x=t, y=Q_raw, name='Dati di portata strumentali')
+    plot1 = go.Scatter(x=t, y=Q_raw, name='Dati portata strumentali')
     #plot2 = go.Scatter(x=t, y=Q_filtered)
     plot3 = go.Scatter(x=t, y=Q_smooth, name='Media mobile dei dati filtrati')
+
 
     fig.add_trace(plot1)
     #fig.add_trace(plot2)
     fig.add_trace(plot3)
-    fig.add_hline(y=Q_MEDIA, line_width=3, line_dash="dash", line_color='red', name='Portata media globale')
+    fig.add_hline(y=Q_MEDIA, line_dash="dash", line_width=3, line_color="red",
+                  annotation_text="Media",
+                  annotation_position="top right")
 
     fig.update_layout(
         template="ggplot2",
+        title=dict(text="Portata", font=dict(size=18), automargin=True, yref='paper'),
         yaxis_range=[-10, max_y + 1/2 * range],
         xaxis_title="",
-        autosize=False,
-        width=800,
-        height=800,
+        autosize=True,
+        # width=800,
+        height=700,
         yaxis_title="Portata [l/s]",
         paper_bgcolor='whitesmoke',
         legend=dict(
+            #title="Portata",
             yanchor="top",
             y=0.99,
             xanchor="left",
@@ -89,18 +94,21 @@ def createPlotHistogram(data, name):
     Q_filtered = data.iloc[:,2]
     fig = px.histogram(Q_filtered)
     fig.update_layout(
-        template="ggplot2",
-        margin=dict(l=20, r=20, t=20, b=20),
-        # autosize=False,
-        width=800,
-        height=400,
+        title=dict(text="Istogramma portate", font=dict(size=15),automargin=True, yref='paper'),
+        template="seaborn",
+        autosize=True,
+        # width=800,
+        height=350,
         xaxis_title="Portata [ l/s ]",
         yaxis_title="Conteggi [minuti]",
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=0.01),
+        showlegend=False,
+        # legend=dict(
+        #     title="Istogramma portata",
+        #     yanchor="top",
+        #     y=0.99,
+        #     xanchor="left",
+        #     x=0.01),
+        margin=dict(l=10, r=10, t=10, b=10),
         bargap=0.1
         )
     dataPlot = fig.to_html("histo"+name+".html")
@@ -111,18 +119,21 @@ def createPlotDurata(data, name):
     Q_filtered = data.iloc[:,2]
     fig = px.histogram(Q_filtered)
     fig.update_layout(
-        template="ggplot2",
-        margin=dict(l=20, r=20, t=20, b=20),
-        autosize=False,
-        width=800,
-        height=800,
+        template="seaborn",
+        title=dict(text="Curva di durata", font=dict(size=15),automargin=True, yref='paper'),
+        autosize=True,
+        # width=800,
+        height=350,
         xaxis_title="Portata [ l/s ]",
         yaxis_title="Conteggi [minuti]",
-        legend=dict(
-            yanchor="top",
-            y=0.99,
-            xanchor="left",
-            x=0.01),
+        showlegend=False,
+        # legend=dict(
+        #     title="Curva di Durata",
+        #     yanchor="top",
+        #     y=0.99,
+        #     xanchor="left",
+        #     x=0.01),
+        margin=dict(l=10, r=10, t=10, b=10),
         bargap=0.1
         )
     dataPlot = fig.to_html("durata"+name+".html")
@@ -146,7 +157,7 @@ def createMap(data):
 
     figure = folium.Figure()
     map = folium.Map(location=[MeanLat, MeanLong],
-                     zoom_start=7,
+                     zoom_start=5,
                      control_scale=True,
                      tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                      attr='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
@@ -191,8 +202,8 @@ def merone1(request):
     data = pd.read_csv("view_portate/static/data/datiMerone1.csv")
     plot_portata = createPlotPortata(data, 'Merone1')
     plot_histo = createPlotHistogram(data, 'Merone1')
-    plot_durata = createPlotHistogram(data, 'Merone1')
-    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Merone I salto',"colori": colori}
+    plot_durata = createPlotDurata(data, 'Merone1')
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone I salto',"colori": colori}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
@@ -201,8 +212,8 @@ def merone3(request):
     data = pd.read_csv("view_portate/static/data/datiMerone3.csv")
     plot_portata = createPlotPortata(data, 'Merone3')
     plot_histo = createPlotHistogram(data, 'Merone3')
-    #durata = createPlotHistogram(data, 'Merone3')
-    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_histo,'title': 'Merone III salto',"colori": colori}
+    plot_durata = createPlotDurata(data, 'Merone3')
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone III salto',"colori": colori}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
@@ -211,68 +222,10 @@ def trebisacce(request):
     data = pd.read_csv("view_portate/static/data/datiTrebisacce.csv")
     plot_portata = createPlotPortata(data, 'Trebisacce')
     plot_histo = createPlotHistogram(data, 'Trebisacce')
-    #durata = createPlotHistogram(data, 'Trebisacce')
-    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_histo,'title': 'Partitore Trebisacce',"colori": colori}
+    plot_durata = createPlotDurata(data, 'Trebisacce')
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Partitore Trebisacce',"colori": colori}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
 
-def ff(x):
-    if len(str(x)) <= 3: return 1
-    else: return 0
-def create_feed(MisuratoriTab):
-
-    ModelloClean = MisuratoriTab["Modello"].values
-    head = MisuratoriTab.head()
-    MedDevStr = []
-
-    UltimoValore = MisuratoriTab["Ultimo_valore"].values
-    UltimoTimeStamp = MisuratoriTab["Ultimo_timestamp"].values
-    UltimoTimeStamp = pd.to_datetime(UltimoTimeStamp)
-
-    Medie = MisuratoriTab["Portata_media_globale"].values
-    Devs = MisuratoriTab["Dev_portata"].values
-    lastMeasure = []
-
-    StateColor = []
-    StatoMisuratori = MisuratoriTab["Stato"]
-
-    for i in range(len(ModelloClean)):
-
-        if str(ModelloClean[i]) == "nan":
-            ModelloClean[i] = ""
-
-        if pd.isnull(UltimoTimeStamp[i]):
-            lastMeasure.append("")
-        else:
-            lastMeasure.append(str(UltimoValore[i])+" l/s al "+UltimoTimeStamp[i].strftime('%d/%m/%Y %H:%M'))
-
-        if np.isnan(Medie[i]):
-            MedDevStr.append("")
-        else:
-            string = str(Medie[i]) +chr(177)+ str(Devs[i])+" l/s"
-            # string = string.replace("Â", " ")
-            MedDevStr.append(string)
-
-        if StatoMisuratori[i] == "In servizio":
-            StateColor.append("green")
-
-    FeedDict = {"testa": head, "punti_misura": MisuratoriTab["Punto_di_misura"], "Modello": ModelloClean, "Media": MedDevStr, "Ultima_misura": lastMeasure, "Stato": StatoMisuratori,"colore": StateColor}
-    # FeedDf = pd.DataFrame(FeedDict)
-
-    # FeedDf = FeedDf.style.set_properties(**{'color': "black", 'align': "left", 'backgroundcolor': "yellow"})
-    # FeedDf = FeedDf.style.set_properties(
-    #     **{"text-align": "left"}
-    # )
-
-    # FeedDf.style.applymap(ff)
-    # FeedDf.to_html("Feed.html", index=False, classes=["table-bordered", "table-striped", "table-hover"], justify='left')
-
-    # with open('Feed.html', 'r') as f:
-    #     FeedHTML = f.read()
-
-    return FeedDict
-
-
-    # Bancale.to_html("OpenBancale.html")
 
