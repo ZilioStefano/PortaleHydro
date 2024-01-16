@@ -1,9 +1,18 @@
-{% extends "view_portate/base.html" %}
-{% block content %}
-<p>Pagina Dati - {{ title }}</p>
-    <p>{{ Graph | safe }}</p>
-    <p>{{ Histo | safe }}</p>
-{% endblock content %}
-{% block sidebar %}
-    <h1>Info ...</h1>
-{% endblock sidebar %}
+{% extends "view_portate/base_dati.html" %}
+{% block grafico1 %}
+    <p>{{ portata | safe }}</p>
+{% endblock grafico1 %}
+{% block graficilato %}
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>{{ histo | safe }}</td>
+            </tr>
+            <tr>
+                <td>{{ durata | safe }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock graficilato %}
+
+

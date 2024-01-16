@@ -5,6 +5,7 @@ import folium
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from statistics import mean
 import numpy as np
 
@@ -40,50 +41,91 @@ colors=['lightgray', #0
         'white' #18
         ]
 
-def createPlot(data, name, column):
+def createPlotPortata(data, name):
     t = pd.to_datetime(data['t'], format='%d/%m/%Y,%H:%M:%S')
     Q_raw = data.iloc[:,1]
-    Q_filtered = data.iloc[:,column[2]]
-    Q_smooth = data.iloc[:,column[3]]
+    #Q_filtered = data.iloc[:2]
+    Q_smooth = data.iloc[:,3]
+    Q_MEDIA = data.iloc[1,4]
 
-    max_y = max(Q_raw)
-    min_y = min(Q_raw)
-    range = max_y - min_y
+    max_y = max(Q_smooth)
+    min_y = min(Q_smooth)
+    range = max_y
 
     fig = go.Figure()
 
-    plot1 = go.Scatter(x=t, y=Q_raw)
-    plot2 = go.Scatter(x=t, y=Q_filtered)
-    plot3 = go.Scatter(x=t, y=Q_smooth)
+    plot1 = go.Scatter(x=t, y=Q_raw, name='Dati di portata strumentali')
+    #plot2 = go.Scatter(x=t, y=Q_filtered)
+    plot3 = go.Scatter(x=t, y=Q_smooth, name='Media mobile dei dati filtrati')
 
     fig.add_trace(plot1)
-    fig.add_trace(plot2)
+    #fig.add_trace(plot2)
     fig.add_trace(plot3)
+    fig.add_hline(y=Q_MEDIA, line_width=3, line_dash="dash", line_color='red', name='Portata media globale')
 
     fig.update_layout(
         template="ggplot2",
-        yaxis_range=[min_y - 1 / 3 * range, max_y + 1 / 3 * range],
+        yaxis_range=[-10, max_y + 1/2 * range],
         xaxis_title="",
+        autosize=False,
+        width=800,
+        height=800,
         yaxis_title="Portata [l/s]",
         paper_bgcolor='whitesmoke',
-        height=800,
-        colorway=[colori.get("grigio"), colori.get("bluchiaro"), colori.get("arancione")]
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="left",
+            x=0.01),
+        margin=dict(l=20, r=20, t=20, b=20),
+        colorway=["lightgray", colori.get("bluchiaro"), colori.get("arancione")]
         )
 
-    dataPlot = fig.to_html(name + ".html")
+    dataPlot = fig.to_html("portata"+name+".html")
 
     return dataPlot
 
-def createHistogram(data, Name, column):
-    Q_filtered = data.iloc[:,column[2]]
+def createPlotHistogram(data, name):
+    Q_filtered = data.iloc[:,2]
     fig = px.histogram(Q_filtered)
     fig.update_layout(
+        template="ggplot2",
+        margin=dict(l=20, r=20, t=20, b=20),
+        # autosize=False,
+        width=800,
+        height=400,
         xaxis_title="Portata [ l/s ]",
         yaxis_title="Conteggi [minuti]",
-        paper_bgcolor='whitesmoke',
-        bargap=0.1,
-        height=500)
-    dataPlot = fig.to_html("Histo"+Name+".html")
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="left",
+            x=0.01),
+        bargap=0.1
+        )
+    dataPlot = fig.to_html("histo"+name+".html")
+
+    return dataPlot
+
+def createPlotDurata(data, name):
+    Q_filtered = data.iloc[:,2]
+    fig = px.histogram(Q_filtered)
+    fig.update_layout(
+        template="ggplot2",
+        margin=dict(l=20, r=20, t=20, b=20),
+        autosize=False,
+        width=800,
+        height=800,
+        xaxis_title="Portata [ l/s ]",
+        yaxis_title="Conteggi [minuti]",
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="left",
+            x=0.01),
+        bargap=0.1
+        )
+    dataPlot = fig.to_html("durata"+name+".html")
 
     return dataPlot
 
@@ -147,30 +189,30 @@ def home(request):
 @login_required
 def merone1(request):
     data = pd.read_csv("view_portate/static/data/datiMerone1.csv")
-    colonne = [0, 1, 2, 3]
-    graph = createPlot(data, 'Merone1', colonne)
-    histo = createHistogram(data, 'Merone1', colonne)
-    graphs = {'Graph': graph,'Histo': histo,'title': 'Merone I salto',"colori": colori}
+    plot_portata = createPlotPortata(data, 'Merone1')
+    plot_histo = createPlotHistogram(data, 'Merone1')
+    plot_durata = createPlotHistogram(data, 'Merone1')
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Merone I salto',"colori": colori}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
 @login_required
 def merone3(request):
     data = pd.read_csv("view_portate/static/data/datiMerone3.csv")
-    colonne = [0, 1, 2, 3]
-    graph = createPlot(data, 'Merone3', colonne)
-    histo = createHistogram(data, 'Merone3', colonne)
-    graphs = {'Graph': graph,'Histo': histo,'title': 'Merone III salto',"colori": colori}
+    plot_portata = createPlotPortata(data, 'Merone3')
+    plot_histo = createPlotHistogram(data, 'Merone3')
+    #durata = createPlotHistogram(data, 'Merone3')
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_histo,'title': 'Merone III salto',"colori": colori}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
 @login_required
 def trebisacce(request):
-    colonne = [0, 1, 3, 4]
     data = pd.read_csv("view_portate/static/data/datiTrebisacce.csv")
-    graph = createPlot(data, 'Trebisacce', colonne)
-    histo = createHistogram(data, 'Trebisacce', colonne)
-    graphs = {'Graph': graph,'Histo': histo,'title': 'Partitore Trebisacce',"colori": colori}
+    plot_portata = createPlotPortata(data, 'Trebisacce')
+    plot_histo = createPlotHistogram(data, 'Trebisacce')
+    #durata = createPlotHistogram(data, 'Trebisacce')
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_histo,'title': 'Partitore Trebisacce',"colori": colori}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
