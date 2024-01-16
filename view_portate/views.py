@@ -197,8 +197,9 @@ def createMap(data):
 def home(request):
     df_tab_misuratori = pd.read_excel("view_portate/static/data/Misuratori installati.xlsx")
     df_tab_misuratori = df_tab_misuratori.replace(np.nan, '', regex=True)
-    df_tab_misuratori['Ultimo_timestamp'] = pd.to_datetime(df_tab_misuratori['Ultimo_timestamp'])#sostituisce nan con stringaq vuota
-    df_tab_misuratori.Ultimo_timestamp.astype(object).where(df_tab_misuratori.Ultimo_timestamp.notnull(), None)
+    # df_tab_misuratori['Ultimo_timestamp'] = pd.to_datetime(df_tab_misuratori['Ultimo_timestamp'])
+    # df_tab_misuratori.Ultimo_timestamp.astype(object).where(df_tab_misuratori.Ultimo_timestamp.notnull(), None)
+    df_tab_misuratori.replace({pd.NaT: None}, inplace=True)
     # df_tab_misuratori["Ultimo_timestamp"] = df_tab_misuratori["Ultimo_timestamp"].replace('NaT', '')
 
     map_fig = createMap(df_tab_misuratori)
