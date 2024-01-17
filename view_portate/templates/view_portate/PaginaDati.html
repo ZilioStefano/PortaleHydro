@@ -5,7 +5,8 @@
         <div class="col-md-6">
             <div class="content-section">
                 <p>{{ portata | safe }}</p>
-                <p>I dati filtrati sono ottenuti applicando un <a href="https://it.mathworks.com/help/matlab/ref/rmoutliers.html" target="_blank" rel="noopener noreferrer">filtro di Hampel</a> per ogni finestra di 300 campioni</p>
+                <p>Per rimuovere i dati anomali viene applicato un <a href="https://it.mathworks.com/help/matlab/ref/rmoutliers.html" target="_blank" rel="noopener noreferrer">filtro di Hampel</a>
+                con una finestra di campionamento di 300 elementi. Sui dati ottenuti viene applicata un media mobile (in grafico).</p>
             </div>
         </div>
         <div class="col-md-6">

@@ -57,7 +57,7 @@ def createPlotPortata(data, name):
 
     plot1 = go.Scatter(x=t, y=Q_raw, name='Dati portata strumentali')
     #plot2 = go.Scatter(x=t, y=Q_filtered)
-    plot3 = go.Scatter(x=t, y=Q_smooth, name='Media mobile dei dati filtrati')
+    plot3 = go.Scatter(x=t, y=Q_smooth, name='Media mobile sui dati filtrati')
 
 
     fig.add_trace(plot1)

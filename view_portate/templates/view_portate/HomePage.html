@@ -35,7 +35,7 @@
                         {% if riga.Stato == 'In servizio' %}
                             <td style="color: {{ colori.blu }}">{{ riga.Stato }}</td>
                         {% elif riga.Stato == 'Guasto' %}
-                            <td style="color: {{ colori.rosso }}">{{ riga.Stato }}</td>
+                            <td style="color: red">{{ riga.Stato }}</td>
                         {% elif riga.Stato == 'In valutazione' %}
                             <td style="color: black">{{ riga.Stato }}</td>
                         {% elif riga.Stato == 'Da installare' %}
