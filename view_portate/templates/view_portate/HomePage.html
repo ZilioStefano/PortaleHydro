@@ -14,7 +14,7 @@
                         <tr>
                             <th>Punto di misura</th>
                             <th>Media ± σ (l/s)</th>
-                            <th>Ultimo dato (l/s)</th>
+                            <th>Ultimo dato</th>
                             <th>Stato</th>
                         </tr>
                     </thead>
@@ -24,10 +24,14 @@
                         <td>{{ riga.Punto_di_misura }}</td>
                         {% if riga.Portata_media_globale == "" %}
                             <td></td>
-                        {% elif riga.Portata_media_globale %}
+                        {% else %}
                             <td>{{ riga.Portata_media_globale }} ± {{ riga.Dev_portata }}</td>
                         {% endif %}
-                        <td>{{ riga.Ultimo_valore }} at {{ riga.Ultimo_timestamp }}</td>
+                        {% if riga.Portata_media_globale == "" %}
+                            <td></td>
+                        {% else %}
+                        <td>{{ riga.Ultimo_valore }} l/s, {{ riga.Ultimo_timestamp }}</td>
+                        {% endif %}
                         {% if riga.Stato == 'In servizio' %}
                             <td style="color: {{ colori.blu }}">{{ riga.Stato }}</td>
                         {% elif riga.Stato == 'Guasto' %}

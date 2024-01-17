@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 # from plotly.subplots import make_subplots
 from statistics import mean
 import numpy as np
+from datetime import datetime
 
 colori={"bluscuro":"#30415d",#0bluscuro
         "blu":"#004fa3",#1blu
@@ -197,10 +198,9 @@ def createMap(data):
 def home(request):
     df_tab_misuratori = pd.read_excel("view_portate/static/data/Misuratori installati.xlsx")
     df_tab_misuratori = df_tab_misuratori.replace(np.nan, '', regex=True)
-    # df_tab_misuratori['Ultimo_timestamp'] = pd.to_datetime(df_tab_misuratori['Ultimo_timestamp'])
-    # df_tab_misuratori.Ultimo_timestamp.astype(object).where(df_tab_misuratori.Ultimo_timestamp.notnull(), None)
-    df_tab_misuratori.replace({pd.NaT: None}, inplace=True)
-    # df_tab_misuratori["Ultimo_timestamp"] = df_tab_misuratori["Ultimo_timestamp"].replace('NaT', '')
+    df_tab_misuratori["Ultimo_timestamp"] = df_tab_misuratori["Ultimo_timestamp"].dt.date
+    df_tab_misuratori['Ultimo_timestamp'] = df_tab_misuratori['Ultimo_timestamp'].apply(lambda x: x.strftime('%d/%m/%Y')if not pd.isnull(x) else '')
+
 
     map_fig = createMap(df_tab_misuratori)
     feed_dict = df_tab_misuratori.to_dict(orient="index").items()
