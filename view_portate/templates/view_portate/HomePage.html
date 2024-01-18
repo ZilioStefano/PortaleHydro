@@ -40,6 +40,8 @@
                             <td style="color: black">{{ riga.Stato }}</td>
                         {% elif riga.Stato == 'Da installare' %}
                             <td style="color: {{ colori.arancione }}">{{ riga.Stato }}</td>
+                        {% elif riga.Stato == 'Inacessibile' %}
+                            <td style="color: {{ colori.grigio }}">{{ riga.Stato }}</td>
                         {% endif %}
                     </tr>
                     {% endfor %}

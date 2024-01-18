@@ -20,7 +20,9 @@ colori={"bluscuro":"#30415d",#0bluscuro
         "verde":"#a5c357",#7verde
         "arancione2":"#ff9c0d",#8arancione2
         "giallo":"#f2cf65",#9giallo
+        "grigio2":'lightgray'
         }
+
 colors=['lightgray', #0
         'pink', #1
         'darkred', #2
@@ -185,6 +187,8 @@ def createMap(data):
 
         elif Stato[i] == "In valutazione":
             MarkerColor = colors[16] #black
+        elif Stato[i] == "Inacessibile":
+            MarkerColor = colors[0]
 
         folium.Marker(location=[Lat[i], Long[i]], tooltip=punti_misura[i], max_width=2000,
             icon=folium.Icon(icon='fa-weight-scale', prefix='fa', color=MarkerColor)).add_to(map)
@@ -215,7 +219,7 @@ def merone1(request):
     plot_histo = createPlotHistogram(data_portata, 'Merone1')
     data_durata = pd.read_csv("view_portate/static/data/durataMerone1.csv")
     plot_durata = createPlotDurata(data_durata, 'Merone1')
-    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone I salto',"colori": colori, "Name": "Merone I salto"}
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone camera di manovra',"colori": colori, "Name": "Merone camera di manovra"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
@@ -226,7 +230,7 @@ def merone3(request):
     plot_histo = createPlotHistogram(data_portata, 'Merone3')
     data_durata = pd.read_csv("view_portate/static/data/durataMerone3.csv")
     plot_durata = createPlotDurata(data_durata, 'Merone3')
-    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone III salto',"colori": colori, "Name": "Merone III salto"}
+    graphs = {'portata': plot_portata, 'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone III salto',"colori": colori, "Name": "Merone III salto"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
