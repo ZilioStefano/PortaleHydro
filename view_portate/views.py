@@ -116,13 +116,13 @@ def createPlotHistogram(data, name):
 
     return dataPlot
 
+
 def createPlotDurata(data, name):
     hours = data.iloc[:,0]
     QQ = data.iloc[:,1]
     max_y = max(QQ)
     # min_y = min(Q_smooth)
     range = max_y
-
 
     fig = px.line(x=hours, y=QQ)
     fig.update_layout(
@@ -215,7 +215,7 @@ def merone1(request):
     plot_histo = createPlotHistogram(data_portata, 'Merone1')
     data_durata = pd.read_csv("view_portate/static/data/durataMerone1.csv")
     plot_durata = createPlotDurata(data_durata, 'Merone1')
-    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone I salto',"colori": colori}
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone I salto',"colori": colori, "Name": "Merone I salto"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
@@ -226,7 +226,7 @@ def merone3(request):
     plot_histo = createPlotHistogram(data_portata, 'Merone3')
     data_durata = pd.read_csv("view_portate/static/data/durataMerone3.csv")
     plot_durata = createPlotDurata(data_durata, 'Merone3')
-    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone III salto',"colori": colori}
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone III salto',"colori": colori, "Name": "Merone III salto"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
@@ -237,7 +237,7 @@ def trebisacce(request):
     plot_histo = createPlotHistogram(data_portata, 'Trebisacce')
     data_durata = pd.read_csv("view_portate/static/data/durataTrebisacce.csv")
     plot_durata = createPlotDurata(data_durata, 'Trebisacce')
-    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Partitore Trebisacce',"colori": colori}
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Partitore Trebisacce',"colori": colori, "Name": "Trebisacce"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
