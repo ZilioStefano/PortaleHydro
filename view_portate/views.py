@@ -42,9 +42,11 @@ colors=['lightgray', #0
         'white' #18
         ]
 
-def createPlotPortata(data, name):
-    t = pd.to_datetime(data['t'], format='%d/%m/%Y,%H:%M:%S')
-    Q_raw = data.iloc[:,1]
+
+def createPlotPortata(data_path, name):
+    data = pd.read_csv(data_path, parse_dates=['t'], date_format='%d/%m/%Y,%H:%M:%S')
+    t = data['t']
+    Q_raw = data['Q_raw']
     #Q_filtered = data.iloc[:2]
     Q_smooth = data.iloc[:,3]
     Q_MEDIA = data.iloc[1,4]
@@ -53,15 +55,10 @@ def createPlotPortata(data, name):
     # min_y = min(Q_smooth)
     range = max_y
 
-    fig = go.Figure()
-
-    plot1 = go.Scatter(x=t, y=Q_raw, name='Dati portata strumentali')
+    fig = go.Figure(go.Scatter(x=t, y=Q_raw, name='Dati portata strumentali'))
     #plot2 = go.Scatter(x=t, y=Q_filtered)
     plot3 = go.Scatter(x=t, y=Q_smooth, name='Media mobile sui dati filtrati')
 
-
-    fig.add_trace(plot1)
-    #fig.add_trace(plot2)
     fig.add_trace(plot3)
     fig.add_hline(y=Q_MEDIA, line_dash="dash", line_width=3, line_color="red",
                   annotation_text="Media",
@@ -88,11 +85,11 @@ def createPlotPortata(data, name):
         )
 
     dataPlot = fig.to_html("portata"+name+".html")
-
     return dataPlot
 
-def createPlotHistogram(data, name):
-    Q_filtered = data.iloc[:,2]
+def createPlotHistogram(data_path, name):
+    data = pd.read_csv(data_path)
+    Q_filtered = data['Q_quartile_hampel_300']
     fig = px.histogram(Q_filtered)
     fig.update_layout(
         title=dict(text="Istogramma portate", font=dict(size=15),automargin=True, yref='paper'),
@@ -122,7 +119,6 @@ def createPlotDurata(data, name):
     max_y = max(QQ)
     # min_y = min(Q_smooth)
     range = max_y
-
 
     fig = px.line(x=hours, y=QQ)
     fig.update_layout(
@@ -210,9 +206,9 @@ def home(request):
 
 @login_required
 def merone1(request):
-    data_portata = pd.read_csv("view_portate/static/data/datiMerone1.csv")
-    plot_portata = createPlotPortata(data_portata, 'Merone1')
-    plot_histo = createPlotHistogram(data_portata, 'Merone1')
+    data_path = "view_portate/static/data/datiMerone1.csv"
+    plot_portata = createPlotPortata(data_path, 'Merone1')
+    plot_histo = createPlotHistogram(data_path, 'Merone1')
     data_durata = pd.read_csv("view_portate/static/data/durataMerone1.csv")
     plot_durata = createPlotDurata(data_durata, 'Merone1')
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone I salto',"colori": colori}
@@ -221,9 +217,9 @@ def merone1(request):
 
 @login_required
 def merone3(request):
-    data_portata = pd.read_csv("view_portate/static/data/datiMerone3.csv")
-    plot_portata = createPlotPortata(data_portata, 'Merone3')
-    plot_histo = createPlotHistogram(data_portata, 'Merone3')
+    data_path = "view_portate/static/data/datiMerone3.csv"
+    plot_portata = createPlotPortata(data_path, 'Merone3')
+    plot_histo = createPlotHistogram(data_path, 'Merone3')
     data_durata = pd.read_csv("view_portate/static/data/durataMerone3.csv")
     plot_durata = createPlotDurata(data_durata, 'Merone3')
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone III salto',"colori": colori}
@@ -232,9 +228,9 @@ def merone3(request):
 
 @login_required
 def trebisacce(request):
-    data_portata = pd.read_csv("view_portate/static/data/datiTrebisacce.csv")
-    plot_portata = createPlotPortata(data_portata, 'Trebisacce')
-    plot_histo = createPlotHistogram(data_portata, 'Trebisacce')
+    data_path = "view_portate/static/data/datiTrebisacce.csv"
+    plot_portata = createPlotPortata(data_path, 'Trebisacce')
+    plot_histo = createPlotHistogram(data_path, 'Trebisacce')
     data_durata = pd.read_csv("view_portate/static/data/durataTrebisacce.csv")
     plot_durata = createPlotDurata(data_durata, 'Trebisacce')
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Partitore Trebisacce',"colori": colori}
