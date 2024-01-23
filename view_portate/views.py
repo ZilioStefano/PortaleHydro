@@ -42,8 +42,9 @@ colors=['lightgray', #0
         'white' #18
         ]
 
-def createPlotPortata(data, name):
-    t = pd.to_datetime(data['t'], format='%d/%m/%Y,%H:%M:%S')
+def createPlotPortata(data_path, name):
+    data = pd.read_csv(data_path,parse_dates=['t'],date_format='%d/%m/%Y,%H:%M:%S')
+    t = data['t']
     Q_raw = data.iloc[:,1]
     #Q_filtered = data.iloc[:2]
     Q_smooth = data.iloc[:,3]
@@ -91,8 +92,8 @@ def createPlotPortata(data, name):
 
     return dataPlot
 
-def createPlotHistogram(data, name):
-    Q_filtered = data.iloc[:,2]
+def createPlotHistogram(data_path, name):
+    Q_filtered = pd.read_csv(data_path, usecols=["Q_quartile_hampel_300"])
     fig = px.histogram(Q_filtered)
     fig.update_layout(
         title=dict(text="Istogramma portate", font=dict(size=15),automargin=True, yref='paper'),
@@ -117,9 +118,10 @@ def createPlotHistogram(data, name):
     return dataPlot
 
 
-def createPlotDurata(data, name):
-    hours = data.iloc[:,0]
-    QQ = data.iloc[:,1]
+def createPlotDurata(data_path, name):
+    data = pd.read_csv(data_path)
+    hours = data['Var1']
+    QQ = data['Var2']
     max_y = max(QQ)
     # min_y = min(Q_smooth)
     range = max_y
@@ -210,33 +212,33 @@ def home(request):
 
 @login_required
 def merone1(request):
-    data_portata = pd.read_csv("view_portate/static/data/datiMerone1.csv")
-    plot_portata = createPlotPortata(data_portata, 'Merone1')
-    plot_histo = createPlotHistogram(data_portata, 'Merone1')
-    data_durata = pd.read_csv("view_portate/static/data/durataMerone1.csv")
-    plot_durata = createPlotDurata(data_durata, 'Merone1')
+    path_portata = "view_portate/static/data/datiMerone1.csv"
+    plot_portata = createPlotPortata(path_portata, 'Merone1')
+    plot_histo = createPlotHistogram(path_portata, 'Merone1')
+    path_durata = "view_portate/static/data/durataMerone1.csv"
+    plot_durata = createPlotDurata(path_durata, 'Merone1')
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone I salto',"colori": colori, "Name": "Merone I salto"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
 @login_required
 def merone3(request):
-    data_portata = pd.read_csv("view_portate/static/data/datiMerone3.csv")
-    plot_portata = createPlotPortata(data_portata, 'Merone3')
-    plot_histo = createPlotHistogram(data_portata, 'Merone3')
-    data_durata = pd.read_csv("view_portate/static/data/durataMerone3.csv")
-    plot_durata = createPlotDurata(data_durata, 'Merone3')
+    path_portata = "view_portate/static/data/datiMerone3.csv"
+    plot_portata = createPlotPortata(path_portata, 'Merone3')
+    plot_histo = createPlotHistogram(path_portata, 'Merone3')
+    path_durata = "view_portate/static/data/durataMerone3.csv"
+    plot_durata = createPlotDurata(path_durata, 'Merone3')
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone III salto',"colori": colori, "Name": "Merone III salto"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
 @login_required
 def trebisacce(request):
-    data_portata = pd.read_csv("view_portate/static/data/datiTrebisacce.csv")
-    plot_portata = createPlotPortata(data_portata, 'Trebisacce')
-    plot_histo = createPlotHistogram(data_portata, 'Trebisacce')
-    data_durata = pd.read_csv("view_portate/static/data/durataTrebisacce.csv")
-    plot_durata = createPlotDurata(data_durata, 'Trebisacce')
+    path_portata = "view_portate/static/data/datiTrebisacce.csv"
+    plot_portata = createPlotPortata(path_portata, 'Trebisacce')
+    plot_histo = createPlotHistogram(path_portata, 'Trebisacce')
+    path_durata = "view_portate/static/data/durataTrebisacce.csv"
+    plot_durata = createPlotDurata(path_durata, 'Trebisacce')
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Partitore Trebisacce',"colori": colori, "Name": "Trebisacce"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
