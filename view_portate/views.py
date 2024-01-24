@@ -32,7 +32,7 @@ colors=['lightgray', #0
         'blue', #8
         'lightgreen', #9
         'lightred', #10
-        'gray', #11
+        'grey', #11
         'cadetblue', #12
         'orange', #13
         'purple', #14
@@ -91,6 +91,7 @@ def createPlotPortata(data_path, name):
     dataPlot = fig.to_html("portata"+name+".html")
 
     return dataPlot
+
 
 def createPlotHistogram(data_path, name):
     Q_filtered = pd.read_csv(data_path, usecols=["Q_quartile_hampel_300"])
@@ -188,6 +189,12 @@ def createMap(data):
         elif Stato[i] == "In valutazione":
             MarkerColor = colors[16] #black
 
+        elif Stato[i] == "Non assegnato":
+            MarkerColor = colors[7] #green
+
+        elif Stato[i] == "Inaccessibile":
+            MarkerColor = 'lightgray' #grey
+
         folium.Marker(location=[Lat[i], Long[i]], tooltip=punti_misura[i], max_width=2000,
             icon=folium.Icon(icon='fa-weight-scale', prefix='fa', color=MarkerColor)).add_to(map)
 
@@ -221,6 +228,7 @@ def merone1(request):
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
+
 @login_required
 def merone3(request):
     path_portata = "view_portate/static/data/datiMerone3.csv"
@@ -231,6 +239,7 @@ def merone3(request):
     graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone III salto',"colori": colori, "Name": "Merone III salto"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
+
 
 @login_required
 def trebisacce(request):
