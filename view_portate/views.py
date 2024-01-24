@@ -217,7 +217,7 @@ def merone1(request):
     plot_histo = createPlotHistogram(path_portata, 'Merone1')
     path_durata = "view_portate/static/data/durataMerone1.csv"
     plot_durata = createPlotDurata(path_durata, 'Merone1')
-    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone I salto',"colori": colori, "Name": "Merone I salto"}
+    graphs = {'portata': plot_portata,'histo': plot_histo,'durata': plot_durata,'title': 'Pagina dati - Merone camera di manovra',"colori": colori, "Name": "Merone camera di manovra"}
 
     return render(request, template_name='view_portate/PaginaDati.html', context=graphs)
 
